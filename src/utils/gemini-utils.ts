@@ -1,15 +1,15 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import { getFromCache, setInCache } from './cache'
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getFromCache, setInCache } from "./cache";
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY)
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
 export async function analyzeArticle(url: string) {
-  const cachedResult = getFromCache(url)
+  const cachedResult = getFromCache(url);
   if (cachedResult) {
-    return cachedResult
+    return cachedResult;
   }
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
   const prompt = `
     Analyze the news article at this URL: ${url}
@@ -22,6 +22,7 @@ export async function analyzeArticle(url: string) {
     5. Determine the country of origin or primary focus of the news article
     
     Consider the global context and use reliable international sources for fact-checking when applicable.
+    Ensure you scrutinise the source of the article and its credibility.
     
     Format the response as a JSON object with the following structure:
     {
@@ -36,18 +37,18 @@ export async function analyzeArticle(url: string) {
     }
 
     Important: Provide only the JSON object in your response, without any additional text, formatting, or explanation.
-  `
+  `;
 
-  const result = await model.generateContent(prompt)
-  const response = await result.response
-  let text = response.text()
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  let text = response.text();
 
   try {
     // Attempt to clean the response
-    text = text.replace(/```json\s*|\s*```/g, '') // Remove any markdown code blocks
-    text = text.replace(/^\s*\{/, '{').replace(/\}\s*$/, '}') // Ensure the text starts with { and ends with }
+    text = text.replace(/```json\s*|\s*```/g, ""); // Remove any markdown code blocks
+    text = text.replace(/^\s*\{/, "{").replace(/\}\s*$/, "}"); // Ensure the text starts with { and ends with }
 
-    const parsedResult = JSON.parse(text)
+    const parsedResult = JSON.parse(text);
 
     // Validate the structure of the parsed result
     if (
@@ -57,12 +58,12 @@ export async function analyzeArticle(url: string) {
       !parsedResult.language ||
       !parsedResult.country
     ) {
-      throw new Error('Invalid response structure')
+      throw new Error("Invalid response structure");
     }
-    setInCache(url, parsedResult)
-    return parsedResult
+    setInCache(url, parsedResult);
+    return parsedResult;
   } catch (error) {
-    console.error('Error parsing Gemini response:', error)
-    throw new Error('Failed to parse the analysis result. Please try again.')
+    console.error("Error parsing Gemini response:", error);
+    throw new Error("Failed to parse the analysis result. Please try again.");
   }
 }

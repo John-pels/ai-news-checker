@@ -2,31 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-layer utilities {
-  @keyframes typing {
-    from {
-      width: 0;
-    }
-    to {
-      width: 100%;
-    }
-  }
-
-  @keyframes blink {
-    50% {
-      border-color: transparent;
-    }
-  }
-
-  .typing-effect {
-    white-space: nowrap;
-    overflow: hidden;
-    border-right: 2px solid;
-    width: 0;
-    animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;

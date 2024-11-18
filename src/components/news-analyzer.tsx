@@ -1,20 +1,12 @@
 'use client'
-
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  LoadingSpinner,
-  Progress,
-} from '@/components'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useAnalyzeNews } from '@/hooks/useAnalyzeNews'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Progress } from "@/components/ui/progress"
 import { AlertTriangleIcon, GlobeIcon, InfoIcon } from 'lucide-react'
+import { useAnalyzeNews } from '@/hooks/useAnalyzeNews'
+import { LoadingSpinner } from './loading-spinner'
 
 export function NewsAnalyzer() {
   const { handleSubmit, result, error, setUrl, loading, url } = useAnalyzeNews()
@@ -69,8 +61,19 @@ export function NewsAnalyzer() {
                 <Progress value={result.factCheck.score} className="w-full" />
               </div>
               <ul className="list-disc pl-5 space-y-2">
-                {result.factCheck.details.map((detail, _) => (
-                  <li key={detail}>{detail}</li>
+                {result.factCheck.details.map((detail, index) => (
+                  <li key={index}>
+                    {typeof detail === 'object' ? (
+                      <div>
+                        <p>{detail.claim}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Credibility: {detail.credibility}% - {detail.explanation}
+                        </p>
+                      </div>
+                    ) : (
+                      detail
+                    )}
+                  </li>
                 ))}
               </ul>
             </CardContent>
